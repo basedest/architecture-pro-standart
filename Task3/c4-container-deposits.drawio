@@ -100,6 +100,9 @@
         <mxCell id="c13" value="отправка СМС и ОТП (F8)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="dep_sms" target="sms">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="c15" value="триггер: ОТП по запросу (F5), уведомления по status-events (F8)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="dep_api" target="dep_sms">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="c14" value="передача СМС" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="sms" target="telecom">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>

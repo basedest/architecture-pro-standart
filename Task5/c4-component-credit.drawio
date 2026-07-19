@@ -88,6 +88,12 @@
         <mxCell id="e9" value="UC4/UC7: отправка СМС (F13, F17)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_sms" target="sms">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="e9b" value="UC4: триггер СМС о визите после подачи (F13)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_rest" target="c_sms">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9c" value="UC7: триггер СМС по credit-application-status (F17)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_kafka" target="c_sms">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="e10" value="publish/consume (R3, R4)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_kafka" target="kafka">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
