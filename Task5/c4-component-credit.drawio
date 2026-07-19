@@ -1,0 +1,136 @@
+<mxfile host="app.diagrams.net" agent="hand-authored" version="24.7.7">
+  <diagram id="c4-component-credit" name="C4 Компоненты — заявка на кредит онлайн">
+    <mxGraphModel dx="1900" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1300" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="site" value="Сайт" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ib" value="Интернет-банк" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="scoring" value="Система скоринга&#10;(Python, Flask)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="360" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bki" value="Бюро кредитных историй&#10;(внешняя, REST API)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="620" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sms" value="СМС-шлюз" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="500" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="credit_frame" value="Сервис кредитных заявок [Java Spring Boot, PostgreSQL] — граница сервиса" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;verticalAlign=top;fontStyle=1;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="300" y="80" width="640" height="620" as="geometry" />
+        </mxCell>
+        <mxCell id="c_rest" value="REST API заявок и каталога&#10;[Component]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="330" y="130" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c_cache" value="Кеш предложений и предодобрений&#10;[Component: PostgreSQL]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="330" y="220" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c_otp" value="Модуль ОТП&#10;[Component: переиспользован из ADR-1]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="330" y="310" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c_scoring" value="Клиент API скоринга&#10;[Component: синхронный вызов F12]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="330" y="400" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c_kafka" value="Kafka producer/consumer&#10;[Component: Spring Kafka]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="620" y="220" width="290" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c_sms" value="Модуль СМС-уведомлений&#10;[Component: F13, F17]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="620" y="400" width="290" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka" value="Kafka&#10;credit-applications, credit-offers,&#10;credit-application-status, credit-approved" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="200" width="280" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="kk_frame" value="Кредитный конвейер (Camunda BPM, Oracle) — граница системы" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="80" width="360" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="kk_camunda" value="Camunda BPM&#10;[Component: процессы заявок]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="120" width="320" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kk_db" value="БД&#10;[СУБД: Oracle]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="210" width="320" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kk_integ" value="Модуль интеграции&#10;[Component: Java, новый, +R7]&#10;консьюмер заявок, публикация каталога/статусов" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="300" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="abs_adapter" value="Интеграционный адаптер АБС&#10;[из ADR-1]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="500" width="280" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="UC1/UC2: REST — каталог, заявка" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="site" target="c_rest">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="UC1/UC6: REST — каталог, предодобрение, заявка" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ib" target="c_rest">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="чтение каталога/предодобрений (P1)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_rest" target="c_cache">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="UC6: подтверждение СМС-кодом (F16)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_rest" target="c_otp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="UC3: синхронный скоринг (F12)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_rest" target="c_scoring">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="REST — вызов скоринга (P4)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_scoring" target="scoring">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6b" value="REST — кредитная история (существующее)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;" edge="1" parent="1" source="scoring" target="bki">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="publish заявок / consume каталога, статусов" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_rest" target="c_kafka">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="обновление кеша из топиков" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_kafka" target="c_cache">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="UC4/UC7: отправка СМС (F13, F17)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_sms" target="sms">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="publish/consume (R3, R4)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="c_kafka" target="kafka">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="UC2/UC7: consume заявок, publish каталога/статусов" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="kafka" target="kk_integ">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="запуск процессов, повторный скоринг (F16)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="kk_integ" target="kk_camunda">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="чтение/запись заявок" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="kk_camunda" target="kk_db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="UC5/UC8: credit-applications, credit-approved" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;jettySize=auto;orthogonalLoop=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="kafka" target="abs_adapter">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="Легенда" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontStyle=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="300" y="740" width="560" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_b_new" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="315" y="770" width="65" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_t_new" value="зелёный блок — новый компонент" style="text;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="390" y="772" width="440" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_b_sys" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="315" y="810" width="65" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_t_sys" value="синий блок — существующий компонент/система" style="text;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="390" y="812" width="440" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_b_ext" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="315" y="850" width="65" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_t_ext" value="серый пунктирный блок — внешняя система (БКИ)" style="text;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="390" y="852" width="440" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_b_frame" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;verticalAlign=top;fontStyle=1;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="315" y="890" width="65" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_t_frame" value="рамка без заливки — граница системы (компоненты внутри)" style="text;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="390" y="892" width="470" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
