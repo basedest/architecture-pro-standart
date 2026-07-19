@@ -1,0 +1,31 @@
+@startuml
+' C4 level 1 — контекст: передача ставок в кол-центр и партнёрский кол-центр, ADR-2
+' Показано только релевантное текущим изменениям (требование задания 4)
+!include <C4/C4_Context>
+
+title Передача ставок в кол-центр — диаграмма контекста (C4 level 1)
+
+AddElementTag("new", $bgColor="#d5e8d4", $fontColor="#333333", $borderColor="#82b366", $legendText="новый / изменяемый элемент")
+
+Person(mgr_dep, "Менеджер бэк-офиса депозитов", "Ведёт ставки в АБС (F7, F10)")
+Person(op_kc, "Оператор кол-центра банка", "Консультирует по ставкам (UC1)")
+Person(op_pkc, "Оператор партнёрского кол-центра", "Консультирует по файлу ставок (UC3)")
+
+System(abs, "АБС", "Delphi, Oracle, PL/SQL; модуль ставок + интеграционный адаптер (из ADR-1)")
+System(kafka, "Kafka", "Топик deposit-rates")
+System(deposits, "Сервис депозитов", "Java Spring Boot, PostgreSQL; кеш ставок + новые компоненты экспорта")
+System(kc, "Система кол-центра банка", "React.js, Java Spring Boot; + новый экран «Ставки по депозитам»")
+System(sftp, "SFTP-сервер банка", "Новый, DMZ. CSV: дата, продукт, срок, ставка", $tags="new")
+System_Ext(pkc, "Система партнёрского кол-центра", "Внешняя; принимает только файлы")
+
+Rel(mgr_dep, abs, "UC4: ведение ставок (F7, F10)")
+Rel(abs, kafka, "UC4: publish deposit-rates", "Kafka, адаптер")
+Rel(kafka, deposits, "UC4: обновление кеша ставок", "Kafka")
+Rel(deposits, kc, "UC1: GET /rates (P1, R3)", "REST")
+Rel(deposits, sftp, "UC2: ежедневный CSV, повтор при сбое (R4, S5)", "SFTP put")
+Rel(pkc, sftp, "UC3: забор файла", "SFTP get")
+Rel(op_kc, kc, "UC1: экран ставок")
+Rel(op_pkc, pkc, "UC3: консультация по ставкам")
+
+SHOW_LEGEND()
+@enduml

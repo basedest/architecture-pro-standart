@@ -1,0 +1,39 @@
+@startuml
+' C4 level 1 — контекст: открытие депозитов онлайн (MVP), ADR-1
+!include <C4/C4_Context>
+
+title Открытие депозитов онлайн (MVP) — диаграмма контекста (C4 level 1)
+
+AddElementTag("new", $bgColor="#d5e8d4", $fontColor="#333333", $borderColor="#82b366", $legendText="новый / изменяемый элемент")
+
+Person(new_client, "Новый клиент", "Оставляет заявку на сайте, идентификация в отделении (+R1)")
+Person(client, "Клиент", "Работает в интернет-банке")
+Person(op_kc, "Оператор кол-центра", "Звонит по заявке с сайта, особые условия (F3)")
+Person(mgr_dep, "Менеджер бэк-офиса депозитов", "Обрабатывает заявки, ведёт ставки (F6, F7)")
+Person(mgr_credit, "Менеджер бэк-офиса кредитов", "Ведёт кредитные ставки (F7, F10)")
+
+System(site, "Сайт", "PHP, React.js: список депозитов и форма заявки")
+System(ib, "Интернет-банк", "ASP.NET MVC 4.5, MS SQL; монолит подрядчика + новый модуль депозитов")
+System(deposits, "Сервис депозитов", "Java Spring Boot, PostgreSQL: заявки, кеш ставок, ОТП, СМС", $tags="new")
+System(kafka, "Kafka", "Кластер в 2 ЦОД. Топики: deposit-applications, deposit-rates, deposit-status-events", $tags="new")
+System(abs, "АБС", "Delphi-клиент, Oracle, PL/SQL; + новый модуль ставок и интеграционный адаптер")
+System(kc, "Система кол-центра", "React.js, Java Spring Boot, PostgreSQL; платформа подрядчика")
+System(sms_gw, "СМС-шлюз телеком-оператора", "Отправка СМС клиентам")
+System_Ext(telecom, "Телеком-оператор", "Внешняя сеть доставки СМС")
+
+Rel(new_client, site, "UC2: заявка (Ф.И.О., телефон)", "HTTPS (F2, F9)")
+Rel(site, deposits, "UC1: просмотр ставок (F1); UC2: передача заявки", "REST/HTTPS, кеш (P1)")
+Rel(deposits, kc, "UC2: создание обращения (F2, F3)", "REST (+R6)")
+Rel(op_kc, kc, "UC2: звонок клиенту, особые условия (F3)")
+Rel(client, ib, "UC3/UC4: просмотр ставок, заявка с СМС-кодом (F4, F5)")
+Rel(ib, deposits, "UC3/UC4: ставки, персональные ставки, заявка (F4, F5)", "REST, кеш (P1)")
+Rel(deposits, kafka, "UC4/UC6: заявки, подписка на ставки и события (R3, R4)", "Kafka")
+Rel(kafka, abs, "UC5/UC6/UC7: заявки в АБС, публикация ставок и статусов (+R4)", "Kafka, адаптер")
+Rel(mgr_dep, abs, "UC5: обработка заявки, подтверждение условий (F6)")
+Rel(mgr_credit, abs, "UC7: ведение ставок, разграничение доступа (F7, F10)")
+Rel(deposits, sms_gw, "UC4/UC6: СМС-код и уведомления (F8, +R2)")
+Rel(sms_gw, telecom, "передача СМС")
+Rel(telecom, client, "доставка СМС")
+
+SHOW_LEGEND()
+@enduml

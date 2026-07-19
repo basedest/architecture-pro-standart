@@ -1,0 +1,34 @@
+@startuml
+' C4 level 3 — компоненты Сервиса депозитов для передачи ставок, ADR-2
+!include <C4/C4_Component>
+
+title Передача ставок в кол-центр — диаграмма компонентов Сервиса депозитов (C4 level 3)
+
+AddElementTag("new", $bgColor="#d5e8d4", $fontColor="#333333", $borderColor="#82b366", $legendText="новый компонент")
+
+ContainerQueue(kafka, "Kafka", "Топик deposit-rates")
+System(kc, "Система кол-центра банка", "React.js: новый экран «Ставки по депозитам»")
+System(sftp, "SFTP-сервер банка", "Новый, DMZ", $tags="new")
+System_Ext(pkc, "Система партнёрского кол-центра", "Внешняя; принимает только файлы")
+
+Container_Boundary(dep_b, "Сервис депозитов [Java Spring Boot, PostgreSQL]") {
+    Component(c_consumer, "Kafka-консьюмер ставок", "Spring Kafka", "Приём обновлений из deposit-rates")
+    ComponentDb(c_cache, "Кеш ставок", "PostgreSQL", "Актуальные публичные ставки (P1, F10)")
+    Component(c_rest, "REST-контроллер ставок", "Spring MVC", "GET /rates для системы КЦ")
+    Component(c_scheduler, "Планировщик экспорта ставок", "Spring Scheduler", "Ежедневно по расписанию + повтор при ошибке (R4)", $tags="new")
+    Component(c_csv, "Генератор CSV", "Java", "Формат: дата, продукт, срок, ставка", $tags="new")
+    Component(c_sftp, "SFTP-клиент", "Java, SSHJ", "Выгрузка файла, журналирование (S5)", $tags="new")
+}
+
+Rel(kafka, c_consumer, "consume: обновления ставок", "Kafka")
+Rel(c_consumer, c_cache, "запись ставок", "SQL")
+Rel(c_rest, c_cache, "чтение ставок (P1)", "SQL")
+Rel(kc, c_rest, "UC1: GET /rates", "REST")
+Rel(c_scheduler, c_cache, "запрос ставок для экспорта", "SQL")
+Rel(c_scheduler, c_csv, "формирование файла")
+Rel(c_csv, c_sftp, "передача CSV")
+Rel(c_sftp, sftp, "UC2: выгрузка файла (R4, S5)", "SFTP put")
+Rel(pkc, sftp, "UC3: забор файла", "SFTP get")
+
+SHOW_LEGEND()
+@enduml

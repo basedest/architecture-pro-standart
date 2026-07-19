@@ -1,0 +1,56 @@
+@startuml
+' C4 level 2 — контейнеры: открытие депозитов онлайн (MVP), ADR-1
+' Детализированы Интернет-банк и АБС (требование задания 3)
+!include <C4/C4_Container>
+
+title Открытие депозитов онлайн (MVP) — диаграмма контейнеров (C4 level 2)
+
+AddElementTag("new", $bgColor="#d5e8d4", $fontColor="#333333", $borderColor="#82b366", $legendText="новый / изменяемый контейнер")
+
+Person(client, "Клиент")
+Person(mgr_dep, "Менеджер бэк-офиса депозитов")
+
+System(site, "Сайт", "PHP, React.js")
+System(kc, "Система кол-центра", "React.js, Java Spring Boot; платформа подрядчика")
+
+System_Boundary(ib_b, "Интернет-банк") {
+    Container(ib_web, "Веб-приложение ИБ", "ASP.NET MVC 4.5", "Ядро подрядчика — не дорабатывается (+R2)")
+    Container(ib_dep, "Модуль депозитов ИБ", "Страницы/контроллеры", "Новый, команда банка", $tags="new")
+    ContainerDb(ib_db, "БД ИБ", "MS SQL")
+}
+
+System_Boundary(abs_b, "АБС") {
+    Container(abs_delphi, "Delphi-клиент (АРМ бэк-офиса)", "Delphi")
+    ContainerDb(abs_db, "БД АБС", "Oracle + PL/SQL", "Учёт счетов; новый модуль ставок и депозитных заявок (F7, F10)", $tags="new")
+    Container(abs_adapter, "Интеграционный адаптер АБС", "Java Spring Boot", "Консьюмер/продюсер Kafka, контроль темпа записи (+R4)", $tags="new")
+}
+
+System_Boundary(dep_b, "Сервис депозитов (новый)") {
+    Container(dep_api, "REST API депозитов", "Java Spring Boot", "Ставки, заявки, ОТП", $tags="new")
+    ContainerDb(dep_db, "БД сервиса", "PostgreSQL", "Заявки, кеш ставок, ОТП-коды", $tags="new")
+    Container(dep_sms, "Модуль СМС-уведомлений", "Java Spring Boot", "ОТП и уведомления (+R2)", $tags="new")
+}
+
+ContainerQueue(kafka, "Kafka", "Кластер в 2 ЦОД", "Топики: deposit-applications, deposit-rates, deposit-status-events", $tags="new")
+System(sms_gw, "СМС-шлюз телеком-оператора")
+System_Ext(telecom, "Телеком-оператор")
+
+Rel(client, site, "HTTPS (F9)")
+Rel(client, ib_web, "HTTPS (F9)")
+Rel(ib_web, ib_db, "чтение/запись", "SQL")
+Rel(site, dep_api, "ставки, заявка (F1, F2, P1)", "REST")
+Rel(ib_dep, dep_api, "ставки, персональные ставки, заявка (F4, F5)", "REST")
+Rel(dep_api, kc, "создание обращения (F2, F3, +R6)", "REST")
+Rel(dep_api, dep_db, "чтение/запись", "SQL")
+Rel(dep_api, kafka, "publish: deposit-applications (R3, R4)", "Kafka")
+Rel(kafka, dep_api, "subscribe: deposit-rates, deposit-status-events", "Kafka")
+Rel(dep_api, dep_sms, "триггер: ОТП по запросу (F5), уведомления по status-events (F8)")
+Rel(dep_sms, sms_gw, "отправка СМС и ОТП (F8)")
+Rel(kafka, abs_adapter, "consume заявки / produce ставки, события", "Kafka")
+Rel(abs_adapter, abs_db, "запись заявок, чтение ставок/статусов (+R4)", "SQL/PLSQL")
+Rel(abs_delphi, abs_db, "ведение ставок, обработка заявок (F6, F7, F10)")
+Rel(mgr_dep, abs_delphi, "работа в АРМ")
+Rel(sms_gw, telecom, "передача СМС")
+
+SHOW_LEGEND()
+@enduml
