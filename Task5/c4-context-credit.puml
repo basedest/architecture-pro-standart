@@ -1,0 +1,44 @@
+@startuml
+' C4 level 1 — контекст: подача заявки на кредит онлайн, ADR-3
+!include <C4/C4_Context>
+
+title Заявка на кредит онлайн — диаграмма контекста (C4 level 1)
+
+AddElementTag("new", $bgColor="#d5e8d4", $fontColor="#333333", $borderColor="#82b366", $legendText="новый / изменяемый элемент")
+
+Person(new_client, "Новый клиент", "Заявка с сайта, решение по данным БКИ (F11, F12)")
+Person(client, "Клиент", "Заявка в ИБ по предодобренному предложению (F15, F16)")
+Person(front, "Менеджер отделения (фронт-офис)", "Продолжает онлайн-заявку в АБС (F14)")
+Person(credit_off, "Сотрудник отдела кредитования", "Обрабатывает заявки в КК")
+
+System(site, "Сайт", "PHP, React.js")
+System(ib, "Интернет-банк", "ASP.NET MVC 4.5; + страницы кредитов (модульно, +R2)")
+System(credit, "Сервис кредитных заявок", "Java Spring Boot, PostgreSQL: каталог, заявки, ОТП, СМС", $tags="new")
+System(kafka, "Kafka", "Топики: credit-applications, credit-offers, credit-application-status, credit-approved")
+System(kk, "Кредитный конвейер", "Camunda BPM, Oracle; + новый модуль интеграции (+R7)")
+System(scoring, "Система скоринга", "Python, Flask, PostgreSQL")
+System_Ext(bki, "Бюро кредитных историй", "Внешняя, REST API")
+System(abs, "АБС", "Delphi, Oracle, PL/SQL; + интеграционный адаптер из ADR-1")
+System(sms_gw, "СМС-шлюз телеком-оператора")
+System_Ext(telecom, "Телеком-оператор")
+
+Rel(new_client, site, "UC2: заявка (Ф.И.О., телефон, паспорт)", "HTTPS (F11, F12, F9)")
+Rel(client, ib, "UC1/UC6: просмотр предложений, заявка (F15, F16)")
+Rel(site, credit, "UC1/UC2/UC3: каталог, заявка, скоринг (F11, F12, P1)", "REST")
+Rel(ib, credit, "UC1/UC6: каталог, предодобрение, заявка (F15, F16)", "REST")
+Rel(credit, kafka, "UC2/UC6: publish credit-applications (R3, R4, P3)", "Kafka")
+Rel(kafka, kk, "UC2/UC7: заявки → КК; каталог и статусы ← КК (новый канал)", "Kafka")
+Rel(kafka, credit, "UC1/UC7: каталог, статусы → кеш", "Kafka")
+Rel(credit, scoring, "UC3: синхронный скоринг нового клиента (F12, P4)", "REST")
+Rel(kk, scoring, "скоринг при обработке заявки (существующее)", "REST")
+Rel(scoring, bki, "кредитная история (существующее)", "REST")
+Rel(kafka, abs, "UC5/UC8: credit-applications, credit-approved", "Kafka, адаптер")
+Rel(abs, kk, "суточный обмен по БД (существующее, +R3)")
+Rel(front, abs, "UC5: продолжение заявки по каноническому ID (F14)")
+Rel(credit_off, kk, "обработка кредитных заявок (существующее)")
+Rel(credit, sms_gw, "UC4/UC7: СМС о визите и статусах (F13, F17)")
+Rel(sms_gw, telecom, "передача СМС")
+Rel(telecom, client, "доставка СМС (+R1)")
+
+SHOW_LEGEND()
+@enduml

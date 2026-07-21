@@ -1,0 +1,51 @@
+@startuml
+' C4 level 3 — компоненты: Сервис кредитных заявок и модуль интеграции КК, ADR-3
+!include <C4/C4_Component>
+
+title Заявка на кредит онлайн — диаграмма компонентов (C4 level 3)
+
+AddElementTag("new", $bgColor="#d5e8d4", $fontColor="#333333", $borderColor="#82b366", $legendText="новый компонент")
+
+System(site, "Сайт", "PHP, React.js")
+System(ib, "Интернет-банк", "ASP.NET MVC 4.5")
+ContainerQueue(kafka, "Kafka", "credit-applications, credit-offers, credit-application-status, credit-approved")
+System(scoring, "Система скоринга", "Python, Flask")
+System_Ext(bki, "Бюро кредитных историй", "Внешняя, REST API")
+Container(abs_adapter, "Интеграционный адаптер АБС", "Java Spring Boot", "Из ADR-1: заявки для отделения (UC5), зачисление (UC8)")
+System(sms_gw, "СМС-шлюз телеком-оператора")
+
+Container_Boundary(credit_b, "Сервис кредитных заявок [Java Spring Boot, PostgreSQL]") {
+    Component(c_rest, "REST API заявок и каталога", "Spring MVC", "Генерирует канонический ID заявки (F14)", $tags="new")
+    ComponentDb(c_cache, "Кеш предложений и предодобрений", "PostgreSQL", "Каталог кредитов, предодобренные предложения (P1)", $tags="new")
+    Component(c_otp, "Модуль ОТП", "Java-библиотека", "Переиспользован из ADR-1 (F16)", $tags="new")
+    Component(c_scoring, "Клиент API скоринга", "Java", "Синхронный вызов для нового клиента (F12)", $tags="new")
+    Component(c_kafka, "Kafka producer/consumer", "Spring Kafka", "Заявки, каталог, статусы (R3, R4)", $tags="new")
+    Component(c_sms, "Модуль СМС-уведомлений", "Java", "F13, F17", $tags="new")
+}
+
+Container_Boundary(kk_b, "Кредитный конвейер [Camunda BPM, Oracle]") {
+    Component(kk_camunda, "Camunda BPM", "BPMN-процессы", "Процессы обработки заявок")
+    ComponentDb(kk_db, "БД КК", "Oracle")
+    Component(kk_integ, "Модуль интеграции", "Java, обработчики Camunda", "Консьюмер заявок, публикация каталога/статусов, повторный скоринг (F16, +R7)", $tags="new")
+}
+
+Rel(site, c_rest, "UC1/UC2: каталог, заявка", "REST")
+Rel(ib, c_rest, "UC1/UC6: каталог, предодобрение, заявка", "REST")
+Rel(c_rest, c_cache, "чтение каталога/предодобрений (P1)", "SQL")
+Rel(c_rest, c_otp, "UC6: подтверждение СМС-кодом (F16)")
+Rel(c_rest, c_scoring, "UC3: синхронный скоринг (F12)")
+Rel(c_scoring, scoring, "вызов скоринга (P4)", "REST")
+Rel(scoring, bki, "кредитная история (существующее)", "REST")
+Rel(c_rest, c_kafka, "publish заявок / consume каталога, статусов")
+Rel(c_kafka, c_cache, "обновление кеша из топиков", "SQL")
+Rel(c_rest, c_sms, "UC4: триггер СМС о визите после подачи (F13)")
+Rel(c_kafka, c_sms, "UC7: триггер СМС по credit-application-status (F17)")
+Rel(c_sms, sms_gw, "UC4/UC7: отправка СМС (F13, F17)")
+Rel(c_kafka, kafka, "publish/consume (R3, R4)", "Kafka")
+Rel(kafka, kk_integ, "UC2/UC7: consume заявок, publish каталога/статусов", "Kafka")
+Rel(kk_integ, kk_camunda, "запуск процессов, повторный скоринг (F16)")
+Rel(kk_camunda, kk_db, "чтение/запись заявок", "SQL")
+Rel(kafka, abs_adapter, "UC5/UC8: credit-applications, credit-approved", "Kafka")
+
+SHOW_LEGEND()
+@enduml
